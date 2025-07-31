@@ -37,7 +37,7 @@ if old_file and new_file:
     differences = []
 
     for _, row in merged.iterrows():
-        emp_id = row['الرقم الوظيفي']
+        emp_id = row["الرقم الوظيفي"]
         dept = row['الدائرة_old'] if 'الدائرة_old' in row else 'غير معروف'
 
         for col in df_old.columns:
