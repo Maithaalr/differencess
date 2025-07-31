@@ -82,9 +82,32 @@ if old_file and new_file:
                     elif val_old != val_new:
                         differences.append((emp_id, dept, col, val_old, val_new))
 
+        # استخراج الفروقات فقط للقيم غير الفارغة
+        differences = []
+        for _, row in merged.iterrows():
+            emp_id = row[id_col_old]
+            dept = row['الدائرة_old'] if 'الدائرة_old' in row else 'غير معروف'
+
+            for col in df_old.columns:
+                if col == id_col_old:
+                    continue
+
+                col_old = f"{col}_old"
+                col_new = f"{col}_new"
+
+                if col_old in merged.columns and col_new in merged.columns:
+                    val_old = row[col_old]
+                    val_new = row[col_new]
+
+                    #  فقط إذا كلا القيمتين موجودتين ومختلفتين
+                    if pd.notna(val_old) and pd.notna(val_new) and val_old != val_new:
+                        differences.append((emp_id, dept, col, val_old, val_new))
+
+
+
         if differences:
             diff_df = pd.DataFrame(differences, columns=["الرقم الوظيفي", "الدائرة", "العمود", "القيمة القديمة", "القيمة الجديدة"])
-            st.success(f"✅ تم العثور على {len(diff_df)} فرق في البيانات.")
+            st.success(f" تم العثور على {len(diff_df)} فرق في البيانات.")
 
             # عرض تبويبات لكل عمود تغيّر
             changed_columns = diff_df['العمود'].unique().tolist()
@@ -94,4 +117,4 @@ if old_file and new_file:
                     st.subheader(f"التغييرات في العمود: {col}")
                     st.dataframe(diff_df[diff_df['العمود'] == col].reset_index(drop=True))
         else:
-            st.info("✅ لا توجد اختلافات بين النظامين.")
+            st.info(" لا توجد اختلافات بين النظامين.")
